@@ -8,3 +8,4 @@ variables-ct*
 *.iml
 data
 _build/
+rebar.lock

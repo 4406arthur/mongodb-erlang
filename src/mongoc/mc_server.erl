@@ -146,6 +146,7 @@ handle_info({'DOWN', MRef, _, _, Reason}, State = #state{topology_mref = MRef, m
   mc_monitor:stop(Pid),
   {stop, Reason, State};
 handle_info({'EXIT', Pid, _Reason}, State = #state{topology = Topology, pool = Pid}) ->
+  mc_pool_sup:stop_pool(Pid),
   gen_server:cast(Topology, {server_to_unknown, self()}),
   {noreply, State#state{pool = undefined}};
 handle_info({'EXIT', Pid, _Reason}, State = #state{monitor = Pid, pool = Pool}) ->

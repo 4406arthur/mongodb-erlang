@@ -28,6 +28,7 @@ start_pool(SizeArgs, WorkerArgs) ->
   supervisor:start_child(?MODULE, [PoolArgs, WorkerArgs]).
 
 stop_pool(Pid) when is_pid(Pid) ->
+  supervisor:terminate_child(?MODULE, Pid),
   poolboy:stop(Pid);
 stop_pool(_) ->
   ok.

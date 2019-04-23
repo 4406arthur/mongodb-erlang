@@ -34,10 +34,14 @@ read(Connection, Request = #'query'{collection = Collection, batchsize = BatchSi
 
 -spec read_one(pid() | atom(), query()) -> undefined | map().
 read_one(Connection, Request) ->
-  {0, Docs} = request_worker(Connection, Request#'query'{batchsize = -1}),
-  case Docs of
-    [] -> undefined;
-    [Doc | _] -> Doc
+  case request_worker(Connection, Request#'query'{batchsize = -1}) of 
+    {0, Docs} ->
+      case Docs of
+        [] -> undefined;
+        [Doc | _] -> Doc
+      end;
+    _ ->
+      bad_query
   end.
 
 command(Connection, Query = #query{selector = Cmd}) ->
@@ -120,7 +124,8 @@ process_error(?NOT_MASTER_ERROR, _) ->
 process_error(Code, _) when ?UNAUTHORIZED_ERROR(Code) ->
   erlang:error(unauthorized);
 process_error(_, Doc) ->
-  erlang:error({bad_query, Doc}).
+  Doc.
+  % erlang:error({bad_query, Doc}).
 
 %% @private
 select_batchsize(undefined, Batchsize) -> Batchsize;

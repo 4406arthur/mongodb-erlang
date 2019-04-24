@@ -29,7 +29,9 @@ read(Connection, Request = #'query'{collection = Collection, batchsize = BatchSi
     {_, []} ->
       [];
     {Cursor, Batch} ->
-      mc_cursor:start_link(Connection, Collection, Cursor, select_batchsize(CmdBatchSize, BatchSize), Batch)
+      mc_cursor:start_link(Connection, Collection, Cursor, select_batchsize(CmdBatchSize, BatchSize), Batch);
+     _ ->
+        bad_query
   end.
 
 -spec read_one(pid() | atom(), query()) -> undefined | map().
@@ -53,7 +55,9 @@ command(Connection, Query = #query{selector = Cmd}) ->
       case read(Connection, Query#query{batchsize = -1}, BatchSize) of
         [] -> [];
         {ok, Cursor} when is_pid(Cursor) ->
-          {ok, Cursor}
+          {ok, Cursor};
+        _ ->
+          []
       end
   end;
 command(Connection, Command) when not is_record(Command, query)->

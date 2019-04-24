@@ -307,7 +307,9 @@ find(Connection, Query) when is_record(Query, query) ->
   case mc_connection_man:read(Connection, Query) of
     [] -> [];
     {ok, Cursor} when is_pid(Cursor) ->
-      {ok, Cursor}
+      {ok, Cursor};
+    ERROR ->
+      ERROR 
   end.
 
 %% @deprecated
